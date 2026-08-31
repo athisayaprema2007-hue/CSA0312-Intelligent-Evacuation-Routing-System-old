@@ -142,6 +142,17 @@ For a short oral-exam reference, see [the viva guide](docs/VIVA_GUIDE.md).
 
 The generated test, benchmark, and road-failure analysis files are retained in `results/` for inspection.
 
+<details>
+<summary>Open verified console output</summary>
+
+![Demo walkthrough and functional tests](docs/evidence/verification_demo_and_tests.png)
+
+![Full-scale benchmark](docs/evidence/verification_benchmark.png)
+
+![30% road-failure experiment](docs/evidence/verification_failure.png)
+
+</details>
+
 ## Complexity
 
 | Operation | Time | Space |
