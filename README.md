@@ -129,6 +129,28 @@ Rebuilds the same city, records baseline routes/timings, blocks exactly
 30% of logical roads (deterministic Fisher–Yates selection), reruns the
 same queries and writes the comparison.
 
+## Verified execution
+
+The following output was produced by a fresh Windows build of this repository.
+Timing values are machine-specific; the generated result files are retained in `results/`.
+
+- Functional validation: **16/16 tests passed**.
+- Scale check: **8,200 intersections** and **21,000 logical roads**; all ten benchmark queries completed well inside the 200 ms target on the recorded system.
+- Resilience check: blocking exactly **6,300 roads (30%)** left 8,026 of 8,200 intersections reachable; the selected destinations were rerouted or reported correctly.
+
+For a short oral-exam reference, see [the viva guide](docs/VIVA_GUIDE.md).
+
+<details>
+<summary>Open verified console output</summary>
+
+![Demo walkthrough and functional tests](docs/evidence/verification_demo_and_tests.png)
+
+![Full-scale benchmark](docs/evidence/verification_benchmark.png)
+
+![30% road-failure experiment](docs/evidence/verification_failure.png)
+
+</details>
+
 ## Complexity
 
 | Operation | Time | Space |
