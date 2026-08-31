@@ -6,11 +6,11 @@
 |---|---|
 | Course | CSA0312 – Data Structures – Slot B |
 | Assignment | Intelligent Emergency Evacuation Routing System for a city with more than 8,000 intersections and 20,000 weighted roads |
-| Student name | _________________________ |
-| Register number | _________________________ |
-| Team members / contributions | _________________________ |
-| Date of submission | _________________________ |
-| GitHub Repository | [Insert repository link after upload] |
+| Student name | Athisaya U |
+| Register number | 192571001 |
+| Team members / contributions | MONIKA B (192571002); PAPAGARI PUSHPA CHARITHA (192525371) |
+| Date of submission | 31/08/2026 |
+| GitHub Repository | https://github.com/athisayaprema2007-hue/CSA0312-Intelligent-Evacuation-Routing-System |
 
 > This project is a C prototype evaluated on deterministic synthetic
 > data. No real-world deployment or real disaster validation is claimed.
@@ -760,7 +760,7 @@ See `report/rubric_checklist.md` for the detailed mapping. Summary:
 | Performance, testing & complexity (15) | §13–§19; `results/*` (all three files) |
 | Reflection & SDG relevance (10) | §21–§22 |
 
-GitHub Repository: [Insert repository link after upload]
+GitHub Repository: https://github.com/athisayaprema2007-hue/CSA0312-Intelligent-Evacuation-Routing-System
 (A local Git repository with the full history is prepared in the project
 folder; the link above is to be filled in once the repository is
 published.)
