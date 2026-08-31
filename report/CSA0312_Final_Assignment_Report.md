@@ -10,6 +10,7 @@
 | Register number | _________________________ |
 | Team members / contributions | _________________________ |
 | Date of submission | _________________________ |
+| GitHub Repository | [Insert repository link after upload] |
 
 > This project is a C prototype evaluated on deterministic synthetic
 > data. No real-world deployment or real disaster validation is claimed.
@@ -111,50 +112,60 @@ Supporting ADTs, each mapped to a requirement:
 All structures are in the corresponding headers under `src/`.
 
 ```c
-typedef struct Edge {            /* one directed half of a road      */
-    int dest_id;                 /* destination intersection          */
-    long weight;                 /* non-negative safety-adjusted cost */
-    int active;                  /* 1 = open, 0 = blocked             */
-    struct Edge *next;           /* next edge in the adjacency list   */
+typedef struct Edge {        /* one directed half of a road */
+    int dest_id;             /* destination intersection    */
+    long weight;             /* safety-adjusted cost, >= 0  */
+    int active;              /* 1 = open, 0 = blocked       */
+    struct Edge *next;       /* next edge in adjacency list */
 } Edge;
 
-typedef struct Vertex {          /* one intersection                  */
-    int id;                      /* external ID (any int)             */
-    int index;                   /* dense 0..n-1 index for arrays     */
-    Edge *edges;                 /* adjacency list head               */
+typedef struct Vertex {      /* one intersection            */
+    int id;                  /* external ID (any int)       */
+    int index;               /* dense 0..n-1 array index    */
+    Edge *edges;             /* adjacency list head         */
     int degree;
 } Vertex;
 
 typedef struct Graph {
-    HashMap *vertices;           /* ID -> Vertex*                     */
-    Vertex **by_index;           /* dense index -> Vertex*            */
+    HashMap *vertices;       /* ID -> Vertex*               */
+    Vertex **by_index;       /* dense index -> Vertex*      */
     int num_vertices;
     int cap_vertices;
-    long num_logical_roads;      /* each bidirectional road once      */
-    unsigned long version;       /* bumped on every routing change    */
+    long num_logical_roads;  /* each road counted once      */
+    unsigned long version;   /* bumped on routing changes   */
 } Graph;
 
-typedef struct HashMapEntry { int key; void *value; struct HashMapEntry *next; } HashMapEntry;
-typedef struct HashMap { HashMapEntry **buckets; int num_buckets; int size; } HashMap;
+typedef struct HashMapEntry {
+    int key; void *value; struct HashMapEntry *next;
+} HashMapEntry;
+typedef struct HashMap {
+    HashMapEntry **buckets; int num_buckets; int size;
+} HashMap;
 
-typedef struct HashSetEntry { int key; struct HashSetEntry *next; } HashSetEntry;
-typedef struct HashSet { HashSetEntry **buckets; int num_buckets; int size; } HashSet;
+typedef struct HashSetEntry {
+    int key; struct HashSetEntry *next;
+} HashSetEntry;
+typedef struct HashSet {
+    HashSetEntry **buckets; int num_buckets; int size;
+} HashSet;
 
 typedef struct HeapNode { int vertex_index; long dist; } HeapNode;
-typedef struct MinHeap { HeapNode *nodes; int *pos; int size; int capacity; } MinHeap;
+typedef struct MinHeap {
+    HeapNode *nodes; int *pos; int size; int capacity;
+} MinHeap;
 
 typedef struct Route {
     int src_id, dst_id;
-    int *intersection_ids;       /* src..dst in travel order          */
+    int *intersection_ids;   /* src..dst in travel order    */
     int num_intersections;
-    long total_cost;             /* -1 when unreachable               */
+    long total_cost;         /* -1 when unreachable         */
     int reachable;
 } Route;
 
 typedef struct RouteCacheEntry {
     int src_id, dst_id;
-    unsigned long graph_version; /* version the route was computed at */
-    Route *route;                /* owned deep copy                   */
+    unsigned long graph_version;  /* version at compute time */
+    Route *route;                 /* owned deep copy          */
     struct RouteCacheEntry *next;
 } RouteCacheEntry;
 
@@ -381,7 +392,8 @@ ExtractMin(H):                         # O(log n)
 
 Heapify(H, i):                         # sift-down
     loop:
-        smallest = argmin(dist) among {i, left(i), right(i)} inside heap
+        smallest = the index with the smallest dist among
+                   i, left(i), right(i) that lie inside the heap
         if smallest == i: stop
         Swap(H, i, smallest)           # swap also fixes pos[]
         i = smallest
@@ -395,18 +407,18 @@ DecreaseKey(H, v, d):                  # O(log n)
 ### 12.7 Dijkstra (`dijkstra.c`)
 
 ```text
-Dijkstra(G, src, dst):                 # dst = NONE settles all vertices
+Dijkstra(G, src, dst):        # dst = NONE: settle all vertices
     for each vertex i: dist[i] = INF; prev[i] = NONE
     dist[src] = 0
     heap = MinHeapCreate(V); Insert(heap, src, 0)
     processed = HashSetCreate()
     while heap not empty:
         (u, d) = ExtractMin(heap)
-        if HashSetContains(processed, u): continue    # already final
+        if HashSetContains(processed, u): continue  # finalized
         HashSetAdd(processed, u)
         if u == dst: break                            # early exit
         for each edge e in u.edges:
-            if not e.active: continue                 # blocked road
+            if not e.active: continue     # blocked road
             v = HashMapGet(G.vertices, e.dest).index
             if HashSetContains(processed, v): continue
             if dist[u] + e.weight < dist[v]:
@@ -450,8 +462,9 @@ CacheStore(C, G, route):
 ```text
 # There is no invalidation pass. Every mutation does:
 #     G.version += 1
-# and CacheLookup treats any entry whose stored version differs from
-# G.version as invalid, evicting it lazily on the next lookup.
+# and CacheLookup treats any entry whose stored version
+# differs from G.version as invalid, evicting it lazily
+# on the next lookup.
 ```
 
 ### 12.11 Multiple-query processing (`route_cache.c: evac_query`)
@@ -464,7 +477,7 @@ EvacQuery(G, C, src, dst):
     r = Dijkstra + ReconstructRoute                  # cache MISS
     CacheStore(C, G, r)      # unreachable results are cached too
     return r
-# The dispatcher simply calls EvacQuery for every (src, dst) request.
+# The dispatcher just calls EvacQuery for each request.
 ```
 
 ## 13. Functional Test Results
@@ -533,8 +546,9 @@ intersections. Cache statistics for the cached-timing loops:
 - **Actual commands and results:**
 
 ```text
-C:\Dev-Cpp\bin\gcc.exe -std=c99 -O2 -Wall -Wextra -pedantic -c <each .c file>
-    -> all 8 translation units compiled with ZERO warnings, exit code 0
+C:\Dev-Cpp\bin\gcc.exe -std=c99 -O2 -Wall -Wextra -pedantic
+                       -c <each of the 8 .c files>
+  -> every translation unit compiled with ZERO warnings, exit 0
 ```
 
 - **Linking caveat (honest record):** on this Windows 11 machine the
@@ -745,3 +759,8 @@ See `report/rubric_checklist.md` for the detailed mapping. Summary:
 | Dijkstra & route reconstruction (20) | §9, §12.7–12.8; `src/dijkstra.c`; tests 1–5, 15 |
 | Performance, testing & complexity (15) | §13–§19; `results/*` (all three files) |
 | Reflection & SDG relevance (10) | §21–§22 |
+
+GitHub Repository: [Insert repository link after upload]
+(A local Git repository with the full history is prepared in the project
+folder; the link above is to be filled in once the repository is
+published.)

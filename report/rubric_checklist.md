@@ -69,7 +69,7 @@ satisfies it. Report sections refer to
 | Complexity analysis | Report §19; summary table in `README.md` |
 | Dijkstra vs Floyd–Warshall comparison | Report §18 |
 | Performance analysis | Report §14–§17; `results/benchmark_results.csv`; `results/road_failure_analysis.txt` |
-| GitHub repository | Local Git repository initialised in the project folder with `.gitignore` and an initial commit (not pushed — publishing requires explicit approval) |
+| GitHub repository | Local Git repository initialised in the project folder with `.gitignore` and commits (not pushed — publishing requires explicit approval); the report carries the placeholder "GitHub Repository: [Insert repository link after upload]" |
 | Reflection + SDG relevance | Report §21–§22 |
 
 ## C. Required system behaviours (from the problem statement)
