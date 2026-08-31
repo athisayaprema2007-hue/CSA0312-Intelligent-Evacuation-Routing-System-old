@@ -1,0 +1,16 @@
+# Build outputs
+bin/
+*.o
+*.obj
+*.exe
+*.out
+
+# Editor and OS noise
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Report conversion intermediates
+report/*.html
+report/~$*

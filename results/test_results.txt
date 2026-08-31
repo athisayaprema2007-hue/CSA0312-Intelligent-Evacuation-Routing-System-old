@@ -1,0 +1,88 @@
+CSA0312 - Intelligent Emergency Evacuation Routing System
+Functional test results
+=========================================================
+Known graph: intersections 1..6 (6 isolated); roads
+1-2 w4, 1-3 w1, 3-2 w2, 2-4 w5, 3-4 w12, 4-5 w3.
+
+Test 01: known shortest route 1 -> 4               
+   expected: cost 8 via 1 -> 3 -> 2 -> 4
+   actual:   cost 8 via 1 -> 3 -> 2 -> 4
+   result:   PASS
+
+Test 02: route reconstruction 1 -> 5               
+   expected: cost 11 via 1 -> 3 -> 2 -> 4 -> 5
+   actual:   cost 11 via 1 -> 3 -> 2 -> 4 -> 5
+   result:   PASS
+
+Test 03: weight update 3-2: 2 -> 10 reroutes 1 -> 4
+   expected: update OK; new best cost 9 via 1 -> 2 -> 4
+   actual:   cost 9 via 1 -> 2 -> 4
+   result:   PASS
+
+Test 04: blocking road 2-4 reroutes 1 -> 4         
+   expected: block OK; new best cost 13 via 1 -> 3 -> 4
+   actual:   cost 13 via 1 -> 3 -> 4
+   result:   PASS
+
+Test 05: reopening road 2-4 restores the route     
+   expected: reopen OK; best cost 9 via 1 -> 2 -> 4 again
+   actual:   cost 9 via 1 -> 2 -> 4
+   result:   PASS
+
+Test 06: invalid source intersection 99            
+   expected: query rejected (NULL route)
+   actual:   NULL (invalid query)
+   result:   PASS
+
+Test 07: invalid destination intersection 77       
+   expected: query rejected (NULL route)
+   actual:   NULL (invalid query)
+   result:   PASS
+
+Test 08: duplicate road 1-2 rejected               
+   expected: duplicate road
+   actual:   duplicate road
+   result:   PASS
+
+Test 09: negative weights rejected (add and update)
+   expected: add: negative weight rejected; update: negative weight rejected
+   actual:   add: negative weight rejected; update: negative weight rejected
+   result:   PASS
+
+Test 10: unreachable destination 6 (isolated)      
+   expected: unreachable
+   actual:   unreachable
+   result:   PASS
+
+Test 11: multiple queries 1->4, 1->5, 2->5         
+   expected: costs 9, 12 and 8
+   actual:   1->4 cost 9, 1->5 cost 12, 2->5 cost 8
+   result:   PASS
+
+Test 12: first cached query 1 -> 4 is a MISS       
+   expected: from_cache=0, route returned
+   actual:   from_cache=0, route returned
+   result:   PASS
+
+Test 13: repeated query 1 -> 4 is a HIT            
+   expected: from_cache=1, cost 9
+   actual:   from_cache=1, cost 9
+   result:   PASS
+
+Test 14: cache invalidated after weight update 2-4: 5 -> 6
+   expected: from_cache=0, cost 10, stale_evictions +1
+   actual:   from_cache=0, cost 10, stale_evictions +1
+   result:   PASS
+
+Test 15: cyclic graph: each intersection processed at most once
+   expected: cost 2, vertices processed <= 4
+   actual:   cost 2, vertices processed 4 (of 4)
+   result:   PASS
+
+Test 16: isolated intersection 6 as a source       
+   expected: unreachable; 1 intersection(s) reachable from 6
+   actual:   unreachable; 1 intersection(s) reachable from 6
+   result:   PASS
+
+=========================================================
+TOTAL: 16/16 tests passed
