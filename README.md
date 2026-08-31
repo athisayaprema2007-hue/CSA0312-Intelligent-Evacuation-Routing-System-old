@@ -66,6 +66,39 @@ Note: on some modern Windows systems the GCC 3.4.2 `collect2` link
 wrapper crashes; the object files still compile and can be linked by
 invoking `ld` directly (documented in the report, section 15).
 
+## Interactive Console Interface
+
+```bash
+bin/evacsim
+```
+
+Running `bin\evacsim.exe` with **no argument** opens a polished
+interactive console dashboard (colour-coded on Windows via
+`SetConsoleTextAttribute`, ANSI colours elsewhere, plain text when
+output is redirected). Menu functions:
+
+1. **Interactive Evacuation Route Planner** – a small demonstration
+   city built through the normal graph API: view intersections and
+   roads, find routes between any two IDs, update road weights, block
+   and reopen roads, inspect route-cache statistics, and reset the
+   city. All input is validated; invalid text, unknown IDs, negative
+   weights, missing roads and unreachable destinations produce clear
+   messages instead of crashes.
+2. **Guided System Demonstration** – the same automated walkthrough as
+   `bin/evacsim demo`.
+3. **Full-Scale Performance Benchmark** – the same run as
+   `bin/evacsim bench results/benchmark_results.csv`.
+4. **30% Road Failure Simulation** – the same run as
+   `bin/evacsim fail results/road_failure_analysis.txt`.
+5. **System Architecture and Features** – module and complexity
+   overview.
+
+The dashboard is presentation only (`src/console_ui.c`); the graph,
+hashing, heap, Dijkstra, cache and test logic are untouched, and the
+command-line modes below remain available for automated evaluation.
+This is a console-based C data-structures prototype, not a deployed
+navigation application.
+
 ## Running
 
 ```bash

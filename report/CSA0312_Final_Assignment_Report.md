@@ -527,8 +527,8 @@ generation and file writing are **outside** every timed region. Raw data:
 | Metric (per query, across 10 queries × 5 passes) | Uncached (full Dijkstra) | Cached (route cache hit) |
 |---|---|---|
 | Minimum | 0.000 ms (below clock resolution) | 0.000000 ms |
-| Average of per-query averages | ≈ 2.95 ms | ≈ 0.00003 ms |
-| Maximum | 5.667 ms | 0.0004 ms |
+| Average of per-query averages | ≈ 3.91 ms | ≈ 0.00003 ms |
+| Maximum | 7.000 ms | 0.0006 ms |
 
 All 10 destinations were reachable; costs 154–265, routes 5–13
 intersections. Cache statistics for the cached-timing loops:
@@ -566,8 +566,8 @@ C:\Dev-Cpp\bin\gcc.exe -std=c99 -O2 -Wall -Wextra -pedantic
 
 **Met on this machine, with the configuration stated here.** The worst
 measured uncached query on the full network (8,200 intersections,
-21,000 roads) took **5.667 ms**, and the average was **≈ 2.95 ms** —
-roughly 35× under the 200 ms budget; cache hits are ~5 orders of
+21,000 roads) took **7.000 ms**, and the average was **≈ 3.91 ms** —
+roughly 28× under the 200 ms budget; cache hits are ~5 orders of
 magnitude faster still. Configuration: the machine above, GCC 3.4.2 at
 `-O2`, seed-20260831 synthetic dataset, `clock()` timing.
 
@@ -597,7 +597,7 @@ data: `results/road_failure_analysis.txt`. Observations (actual run):
   intersections) as detours replaced blocked segments; one query found
   a *shorter-hop* but similar-cost alternative (12 → 7 hops, +3 cost).
 - **Runtime stayed in the same few-millisecond band** (per-query
-  averages 0.0–7.7 ms, vs 0.0–6.0 ms before). Dijkstra still scans
+  averages 0.0–10.0 ms, vs 0.0–8.3 ms before). Dijkstra still scans
   blocked edges' `active` flags, so work does not drop proportionally;
   all measurements remain far under 200 ms.
 - **Cache invalidation worked as designed:** blocking bumped the graph
@@ -718,7 +718,7 @@ mattered as much as the happy path — in an evacuation system, a wrong
 The delivered prototype meets every stated constraint: a HashMap-based
 adjacency list stores an 8,200-intersection / 21,000-road city in
 O(V+E) memory; a min-heap with a working decrease-key drives Dijkstra
-to answer minimum-cost queries in ≈ 3 ms (worst measured 5.7 ms, budget
+to answer minimum-cost queries in ≈ 4 ms (worst measured 7.0 ms, budget
 200 ms); a HashSet guarantees each intersection is processed once even
 in cyclic networks; dynamic weight updates and road blocking/reopening
 take effect immediately and invalidate the version-stamped route cache

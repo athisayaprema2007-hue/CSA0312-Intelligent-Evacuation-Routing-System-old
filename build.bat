@@ -13,7 +13,7 @@ if errorlevel 1 (
 )
 
 set CFLAGS=-std=c99 -O2 -Wall -Wextra -pedantic
-set CORE=src\graph.c src\hashmap.c src\hashset.c src\minheap.c src\dijkstra.c src\route_cache.c
+set CORE=src\graph.c src\hashmap.c src\hashset.c src\minheap.c src\dijkstra.c src\route_cache.c src\console_ui.c
 
 if not exist bin mkdir bin
 
@@ -37,7 +37,7 @@ echo Standard link failed; trying compile-then-direct-ld fallback...
 set DEVROOT=C:\Dev-Cpp
 if not exist "%DEVROOT%\bin\ld.exe" goto :error
 
-for %%f in (graph hashmap hashset minheap dijkstra route_cache) do (
+for %%f in (graph hashmap hashset minheap dijkstra route_cache console_ui) do (
     "%CC%" %CFLAGS% -c src\%%f.c -o bin\%%f.o
     if errorlevel 1 goto :error
 )
@@ -49,7 +49,7 @@ if errorlevel 1 goto :error
 set LDLIBS=-lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt -luser32 -lkernel32 -ladvapi32 -lshell32 -lmingw32 -lgcc -lmoldname -lmingwex -lmsvcrt
 set CRT0=%DEVROOT%\lib\crt2.o %DEVROOT%\lib\gcc\mingw32\3.4.2\crtbegin.o
 set CRT1=%DEVROOT%\lib\gcc\mingw32\3.4.2\crtend.o
-set OBJS=bin\graph.o bin\hashmap.o bin\hashset.o bin\minheap.o bin\dijkstra.o bin\route_cache.o
+set OBJS=bin\graph.o bin\hashmap.o bin\hashset.o bin\minheap.o bin\dijkstra.o bin\route_cache.o bin\console_ui.o
 
 "%DEVROOT%\bin\ld.exe" -Bdynamic -o bin\evacsim.exe %CRT0% -L%DEVROOT%\lib\gcc\mingw32\3.4.2 -L%DEVROOT%\lib bin\main.o %OBJS% %LDLIBS% %CRT1%
 if errorlevel 1 goto :error

@@ -12,7 +12,7 @@ CFLAGS  ?= -std=c11 -O2 -Wall -Wextra -Wpedantic
 BIN      = bin
 
 CORE_SRC = src/graph.c src/hashmap.c src/hashset.c src/minheap.c \
-           src/dijkstra.c src/route_cache.c
+           src/dijkstra.c src/route_cache.c src/console_ui.c
 
 .PHONY: all test bench fail demo clean
 
