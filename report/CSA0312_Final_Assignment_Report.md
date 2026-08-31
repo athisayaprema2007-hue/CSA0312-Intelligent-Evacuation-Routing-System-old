@@ -761,6 +761,4 @@ See `report/rubric_checklist.md` for the detailed mapping. Summary:
 | Reflection & SDG relevance (10) | §21–§22 |
 
 GitHub Repository: https://github.com/athisayaprema2007-hue/CSA0312-Intelligent-Evacuation-Routing-System
-(A local Git repository with the full history is prepared in the project
-folder; the link above is to be filled in once the repository is
-published.)
+The repository contains the complete project files and is available at the URL above.
