@@ -87,5 +87,5 @@ satisfies it. Report sections refer to
 | Unreachable centers identified | tests 10, 16; demo step 9 |
 | Implemented in C | entire `src/`, standard C (valid C99 and C11) |
 | Route caching with invalidation | `src/route_cache.c`; tests 12–14; graph `version` mechanism |
-| 200 ms evaluation | report §16 (met on the stated machine: worst 5.667 ms) |
+| 200 ms evaluation | report §16 (met on the stated machine: worst 7.000 ms) |
 | 30% road failure behaviour | report §17; `results/road_failure_analysis.txt` |
