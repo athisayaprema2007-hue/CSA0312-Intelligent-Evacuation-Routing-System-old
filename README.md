@@ -163,11 +163,10 @@ This is still a student prototype, so there are a few important limitations:
 - any graph change invalidates all cached routes, which is simple and correct but not very selective
 - `clock()` has limited timing resolution, so very fast operations are measured in batches
 
-## Report and viva notes
+## Report files
 
 - [Final assignment report (PDF)](report/CSA0312_Final_Assignment_Report.pdf)
 - [Final assignment report (Word)](report/CSA0312_Final_Assignment_Report.docx)
 - [Rubric checklist](report/rubric_checklist.md)
-- [Short viva guide](docs/VIVA_GUIDE.md)
 
 The detailed design decisions, pseudocode, testing, Dijkstra vs Floyd–Warshall comparison, performance analysis and SDG reflection are all explained in the report.
