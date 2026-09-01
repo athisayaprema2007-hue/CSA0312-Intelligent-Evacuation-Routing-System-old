@@ -1,183 +1,173 @@
 # Intelligent Emergency Evacuation Routing System
 
-CSA0312 – Data Structures – Slot B final assignment.
-A modular C prototype that routes evacuees through a city road network of
-more than 8,000 intersections and 20,000 weighted roads, under disaster
-conditions where road costs change and roads become blocked. It is a
-course prototype evaluated on synthetic data, not a deployed system.
+This project was built for our **CSA0312 – Data Structures (Slot B)** final assignment.
 
-## Purpose
+The idea is to represent a city road network as a weighted graph and find the best available evacuation route during a disaster. Road costs can change because of congestion or damage, and roads can also be blocked and reopened while the program is running.
 
-During floods, earthquakes, fires or industrial accidents, travel costs
-on city roads change continuously and some roads become impassable. The
-system answers "what is the minimum-cost open route from disaster
-location S to evacuation center D right now?" quickly, repeatedly, and
-for many (S, D) pairs, while detecting unreachable evacuation centers.
+The project is a **C-based course prototype** tested using synthetic city data. It is not meant to be a real emergency-navigation system.
 
-## Features
+## What the system does
 
-- HashMap-based adjacency list for a sparse network (no adjacency matrix)
-- Bidirectional roads with non-negative, safety-adjusted travel costs
-- Dynamic road-weight updates and road blocking/reopening
-- Min-heap (insert, extract-min, heapify, decrease-key) driving Dijkstra
-- HashSet of processed intersections – no intersection is processed twice,
-  so cyclic networks are handled safely
-- Route reconstruction with full path and total travel cost
-- Route cache with graph-version invalidation for repeated queries
-- Validation: invalid vertices, duplicate roads, self-loops, negative
-  weights, unreachable destinations
-- Deterministic synthetic city (fixed seed) for benchmarking:
-  8,200 intersections, 21,000 logical roads
-- 30% road-failure experiment with reachability/cost/runtime analysis
-- All dynamic memory is freed (create/free pairs in every module)
+The program can:
 
-## Data structures (all in `src/`)
+- store a large, sparse road network using a HashMap-based adjacency list
+- add and manage bidirectional weighted roads
+- update road weights when conditions change
+- block and reopen roads without deleting them
+- find the minimum-cost route using Dijkstra's algorithm
+- use a Min-Heap as the priority queue for Dijkstra
+- use a HashSet so the same intersection is not processed repeatedly
+- reconstruct and print the complete route
+- cache repeated source-to-destination queries
+- automatically invalidate old cached routes after a graph change
+- detect invalid intersections, duplicate roads, negative weights and unreachable destinations
 
-| Structure | File | Role |
-|---|---|---|
-| `Vertex` | graph.h | one intersection (ID, dense index, adjacency list) |
-| `Edge` | graph.h | one directed half of a road (dest, weight, active flag) |
-| `Graph` | graph.h | HashMap of vertices + version counter |
-| `HashMapEntry`, `HashMap` | hashmap.h | intersection-ID → Vertex lookup |
-| `HashSetEntry`, `HashSet` | hashset.h | processed-intersection set in Dijkstra |
-| `HeapNode`, `MinHeap` | minheap.h | priority queue for Dijkstra |
-| `Route` | dijkstra.h | reconstructed path + total cost |
-| `RouteCacheEntry`, `RouteCache` | route_cache.h | version-stamped route cache |
+For testing at scale, the program also creates a deterministic synthetic city with **8,200 intersections and 21,000 logical roads**.
 
-## Building
+## Why these data structures were used
 
-Preferred (any modern GCC/Clang, Linux/macOS/MinGW with make):
+The city network is very sparse, so an adjacency matrix would waste a large amount of memory. Instead, we used an adjacency list and a HashMap so intersection IDs can be looked up quickly.
+
+A **Min-Heap** is used to efficiently pick the next lowest-cost vertex in Dijkstra, while a **HashSet** keeps track of processed intersections. For repeated queries, a separate route cache stores previously calculated routes. The graph has a version number, so if any road changes, an older cached route is treated as stale and recalculated.
+
+## Main files
+
+| File | Purpose |
+|---|---|
+| `src/graph.c` / `graph.h` | Graph, intersections, roads and road updates |
+| `src/hashmap.c` / `hashmap.h` | Intersection ID to vertex lookup |
+| `src/hashset.c` / `hashset.h` | Processed-intersection tracking |
+| `src/minheap.c` / `minheap.h` | Priority queue operations |
+| `src/dijkstra.c` / `dijkstra.h` | Shortest path and route reconstruction |
+| `src/route_cache.c` / `route_cache.h` | Repeated-query cache and invalidation |
+| `src/console_ui.c` / `console_ui.h` | Interactive console interface |
+| `src/main.c` | Demo, benchmark and road-failure modes |
+| `tests/test_runner.c` | Functional test cases |
+
+## Building the project
+
+With a modern GCC/Clang setup and `make`:
 
 ```bash
 make
 ```
 
-Windows without make:
+On Windows without `make`:
 
-```bash
-./build.bat
+```bat
+build.bat
 ```
 
-The code is standard C (valid C99 and C11). The Makefile uses
-`gcc -std=c11 -O2 -Wall -Wextra -Wpedantic`; `build.bat` uses
-`-std=c99 -O2 -Wall -Wextra -pedantic` so it also works on the old
-GCC 3.4.x shipped with Dev-C++ (which predates `-std=c11`).
-Note: on some modern Windows systems the GCC 3.4.2 `collect2` link
-wrapper crashes; the object files still compile and can be linked by
-invoking `ld` directly (documented in the report, section 15).
+The source is standard C and is valid under C99/C11. The report also documents the linker workaround that was needed when testing with the older GCC 3.4.2 toolchain on Windows.
 
-## Interactive Console Interface
+## Interactive program
 
-```bash
-bin/evacsim
+Run the executable without arguments:
+
+```bat
+bin\evacsim.exe
 ```
 
-Running `bin\evacsim.exe` with **no argument** opens a polished
-interactive console dashboard (colour-coded on Windows via
-`SetConsoleTextAttribute`, ANSI colours elsewhere, plain text when
-output is redirected). Menu functions:
+The main menu lets you open the interactive route planner, run the guided demo, run the full benchmark, run the 30% road-failure experiment, or view a short architecture/complexity summary.
 
-1. **Interactive Evacuation Route Planner** – a small demonstration
-   city built through the normal graph API: view intersections and
-   roads, find routes between any two IDs, update road weights, block
-   and reopen roads, inspect route-cache statistics, and reset the
-   city. All input is validated; invalid text, unknown IDs, negative
-   weights, missing roads and unreachable destinations produce clear
-   messages instead of crashes.
-2. **Guided System Demonstration** – the same automated walkthrough as
-   `bin/evacsim demo`.
-3. **Full-Scale Performance Benchmark** – the same run as
-   `bin/evacsim bench results/benchmark_results.csv`.
-4. **30% Road Failure Simulation** – the same run as
-   `bin/evacsim fail results/road_failure_analysis.txt`.
-5. **System Architecture and Features** – module and complexity
-   overview.
+Inside the route planner, you can view the demo roads, find a route, update a road weight, block/reopen a road, check cache statistics and reset the demonstration city.
 
-The dashboard is presentation only (`src/console_ui.c`); the graph,
-hashing, heap, Dijkstra, cache and test logic are untouched, and the
-command-line modes below remain available for automated evaluation.
-This is a console-based C data-structures prototype, not a deployed
-navigation application.
+One simple example is route **1 → 4**. The first request is calculated using Dijkstra and stored in the cache. Repeating the same request without changing the graph gives a cache hit. If road **2–4** is blocked, the old cached route becomes stale and the program calculates a new route automatically.
 
-## Running
+## Other run modes
 
-```bash
-bin/evacsim demo
+Guided demonstration:
+
+```bat
+bin\evacsim.exe demo
 ```
-Narrated small-city walkthrough: adding intersections and roads,
-updating a weight, blocking/reopening a road, cache miss/hit/
-invalidation, multiple queries, unreachable and invalid queries.
 
-```bash
-bin/test_runner results/test_results.txt
+Functional tests:
+
+```bat
+bin\test_runner.exe results\test_results.txt
 ```
-Runs the 16 functional tests and writes expected/actual/PASS-FAIL
-for each into `results/test_results.txt` (exit code 0 only if all pass).
 
-```bash
-bin/evacsim bench results/benchmark_results.csv
+Full-scale benchmark:
+
+```bat
+bin\evacsim.exe bench results\benchmark_results.csv
 ```
-Generates the deterministic 8,200-vertex / 21,000-road city
-(seed 20260831), times 10 routing queries uncached and cached
-(min/avg/max over 5 passes), and writes the CSV. Graph generation and
-file writing are excluded from all timed regions.
 
-```bash
-bin/evacsim fail results/road_failure_analysis.txt
+30% road-failure experiment:
+
+```bat
+bin\evacsim.exe fail results\road_failure_analysis.txt
 ```
-Rebuilds the same city, records baseline routes/timings, blocks exactly
-30% of logical roads (deterministic Fisher–Yates selection), reruns the
-same queries and writes the comparison.
 
-## Verified execution
+## Results
 
-The following output was produced by a fresh Windows build of this repository.
-Timing values are machine-specific; the generated result files are retained in `results/`.
+The final verified run produced:
 
-- Functional validation: **16/16 tests passed**.
-- Scale check: **8,200 intersections** and **21,000 logical roads**; all ten benchmark queries completed well inside the 200 ms target on the recorded system.
-- Resilience check: blocking exactly **6,300 roads (30%)** left 8,026 of 8,200 intersections reachable; the selected destinations were rerouted or reported correctly.
+- **16/16 functional tests passed**
+- benchmark graph: **8,200 intersections and 21,000 logical roads**
+- average uncached query time: about **3.91 ms**
+- worst recorded uncached query: **7.000 ms**
+- average cached lookup: about **0.00003 ms**
+- after blocking exactly **6,300 roads (30%)**, **8,026 of 8,200 intersections** were still reachable from the reference source
 
-For a short oral-exam reference, see [the viva guide](docs/VIVA_GUIDE.md).
+The timing values are specific to the machine used for testing, but the recorded run stayed comfortably below the assignment's **200 ms** routing target.
 
-The generated test, benchmark, and road-failure analysis files are retained in `results/` for inspection.
+The raw results are kept in the `results/` folder instead of only being written in the report.
+
+## Verified output
 
 <details>
-<summary>Open verified console output</summary>
+<summary>Demo and functional tests</summary>
 
 ![Demo walkthrough and functional tests](docs/evidence/verification_demo_and_tests.png)
 
+</details>
+
+<details>
+<summary>Full-scale benchmark</summary>
+
 ![Full-scale benchmark](docs/evidence/verification_benchmark.png)
+
+</details>
+
+<details>
+<summary>30% road-failure experiment</summary>
 
 ![30% road-failure experiment](docs/evidence/verification_failure.png)
 
 </details>
 
-## Complexity
+## Complexity summary
 
-| Operation | Time | Space |
+| Operation | Time complexity | Space |
 |---|---|---|
-| Vertex lookup (HashMap) | O(1) average | O(V) |
-| Add road / update / block | O(1) avg + O(deg) edge scan | O(1) |
-| Min-heap insert / extract-min / decrease-key | O(log V) | O(V) |
-| Dijkstra (binary heap + adjacency list) | O((V + E) log V) | O(V) |
-| Route reconstruction | O(L) for an L-hop route | O(L) |
-| Cache lookup / insert | O(1) average | O(routes cached) |
-| Graph storage | – | O(V + E) |
+| HashMap vertex lookup | O(1) average | O(V) total |
+| Road add/update/block | O(degree) | O(1) additional |
+| Heap insert / extract-min / decrease-key | O(log V) | O(V) |
+| Dijkstra with binary heap | O((V + E) log V) | O(V) working |
+| Route reconstruction | O(L) | O(L) |
+| Cache lookup / store | O(1) average | depends on cached routes |
+| Graph storage | — | O(V + E) |
 
-Floyd–Warshall (O(V³) time, O(V²) space) is analysed in the report and
-shown to be unsuitable at this scale (~8,200 vertices).
+Floyd–Warshall was analysed for comparison, but it is not suitable for this full network because its O(V³) running time and O(V²) memory are too expensive for a large, changing, sparse graph.
 
 ## Limitations
 
-- Single-threaded prototype; no real map data, GPS input or live feeds
-- Costs are single scalar "safety-adjusted" values, not separate
-  distance/safety objectives
-- Cache invalidation is global (any change invalidates all cached
-  routes), which is correct but coarse
-- clock() timing has ~1 ms resolution; fast operations are timed in
-  batches and averaged
-- Tested on synthetic data only; no real disaster validation is claimed
+This is still a student prototype, so there are a few important limitations:
 
-See `report/CSA0312_Final_Assignment_Report.md` for the full report and
-`report/rubric_checklist.md` for the rubric mapping.
+- the road network is synthetic rather than real map data
+- there is no GPS or live traffic feed
+- the program is single-threaded
+- each road has one combined safety-adjusted cost instead of separate distance and safety scores
+- any graph change invalidates all cached routes, which is simple and correct but not very selective
+- `clock()` has limited timing resolution, so very fast operations are measured in batches
+
+## Report and viva notes
+
+- [Final assignment report (PDF)](report/CSA0312_Final_Assignment_Report.pdf)
+- [Final assignment report (Word)](report/CSA0312_Final_Assignment_Report.docx)
+- [Rubric checklist](report/rubric_checklist.md)
+- [Short viva guide](docs/VIVA_GUIDE.md)
+
+The detailed design decisions, pseudocode, testing, Dijkstra vs Floyd–Warshall comparison, performance analysis and SDG reflection are all explained in the report.
